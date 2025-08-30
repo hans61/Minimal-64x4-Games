@@ -3,14 +3,14 @@
 #org 0x430c ViewPort:
 #org 0x8000
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Start Game ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-begin:        LDI 0xfe STB 0xffff ; SP initialisieren
+begin:      LDI 0xfe STB 0xffff ; SP initialisieren
             JPS initVariables
             JPS loadHighscore
             JPS _Clear
             JPS printHighscore
             LDI 80
             STB tmp00
-startLoop:    JPS delayLong
+startLoop:  JPS delayLong
             LDB pressed
             CPI 0x00
             BNE startGame
@@ -24,9 +24,9 @@ startGame:
             STB level
             CLW score+0 CLW score+2
             JPS initFlashLevel
-gameLoop:    JPS initVariables
+gameLoop:   JPS initVariables
             JPS drawLevel
-checkKeys:    JPS KeyHandler
+checkKeys:  JPS KeyHandler
             JPS delayLong
             LDB gameRun
             CPI 0x00
@@ -37,7 +37,7 @@ checkKeys:    JPS KeyHandler
             CPI 0x00
             BNE deathSound
             JPA checkEscapeKey
-checkKey1:    LDB oldPlayerXPosLo
+checkKey1:  LDB oldPlayerXPosLo
             STB tmpXPosLo
             LDB oldPlayerXPosHi
             STB tmpXPosHi
@@ -48,7 +48,7 @@ checkKey1:    LDB oldPlayerXPosLo
             CPI 0x09
             BCC checkKey2
             LDI 0x07
-checkKey2:    STB playerFrameNumber
+checkKey2:  STB playerFrameNumber
             JPS delayLong
             JPA redrawPlayer
 deathSound:
@@ -59,7 +59,7 @@ deathSound:
             BEQ gameOver
             JPS clearScreen
             JPA gameLoop
-gameOver:    LDI 10 STB _XPos
+gameOver:   LDI 10 STB _XPos
             LDI 9 STB _YPos
             JPS printLine
             '  ***********  ',0,
@@ -72,13 +72,13 @@ gameOver:    LDI 10 STB _XPos
             JPS printLine
             '  ***********  ',0,
             JPS _WaitInput
-gameOver0:    JPS clearScreen
+gameOver0:  JPS clearScreen
             JPS loadHighscore
             JPS cmpHighscore
             CPI 0x00
             BEQ gameOver1
             JPS saveHighscore
-gameOver1:    JPS printHighscore
+gameOver1:  JPS printHighscore
             JPS _WaitInput
             JPS clearScreen
             JPA startGame
@@ -120,16 +120,16 @@ loopLevelComplete:
             STB level         ;reset to level 1
             JPS _Clear
                               ;JPS loadLevels
-startLevel:    JPA gameLoop
+startLevel: JPA gameLoop
 playSoundAndScoreLevelComplete:
-                              ;lda soundPitchValuesLevelComplete,x
-                              ;sta pitch2
-                              ;lda #$01
-                              ;sta pitch2+2                        ;duration
-                              ;lda #$07
-                              ;ldx #<sound2
-                              ;ldy #>sound2
-                              ;jsr OSWORD                          ;SOUND
+;lda soundPitchValuesLevelComplete,x
+;sta pitch2
+;lda #$01
+;sta pitch2+2                        ;duration
+;lda #$07
+;ldx #<sound2
+;ldy #>sound2
+;jsr OSWORD                          ;SOUND
             JPS delayLevel
             INB cntLevelComplete
             MIZ 0x50,0
@@ -140,27 +140,27 @@ checkPlaySoundGold:
             LDB soundIndexGold ;MBZ soundIndexGold,0 ???
             CPI 0x00
             BEQ checkPlaySoundAllGold ;done playing the sound for collecting a gold ingot
-                              ;lda soundPitchValuesForGold,x
-                              ;sta pitch3
-                              ;lda #$07
-                              ;ldx #<sound3
-                              ;ldy #>sound3
-                              ;jsr OSWORD                          ;SOUND
+;lda soundPitchValuesForGold,x
+;sta pitch3
+;lda #$07
+;ldx #<sound3
+;ldy #>sound3
+;jsr OSWORD                          ;SOUND
             DEB soundIndexGold
             JPA checkHoleDigging
 checkPlaySoundAllGold:
             LDB playingSoundAllGold
             CPI 0x00
             BEQ checkHoleDigging ;done playing the sound for collecting all the gold ingots
-                              ;ldx soundIndexAllGold
-                              ;lda soundPitchValuesAllGold,x
-                              ;sta pitch2
-                              ;lda soundDurationValuesAllGold,x
-                              ;sta pitch2+2                        ;duration
-                              ;lda #$07
-                              ;ldx #<sound2
-                              ;ldy #>sound2
-                              ;jsr OSWORD                          ;SOUND
+;ldx soundIndexAllGold
+;lda soundPitchValuesAllGold,x
+;sta pitch2
+;lda soundDurationValuesAllGold,x
+;sta pitch2+2                        ;duration
+;lda #$07
+;ldx #<sound2
+;ldy #>sound2
+;jsr OSWORD                          ;SOUND
             INB soundIndexAllGold
             LDB soundIndexAllGold
             CPI 0x06
@@ -179,8 +179,8 @@ checkHoleDigging:
             CPI 0x00
             BEQ checkPlayerFalling ;not digging a hole at the moment
 ; update animation of hole digging
-                              ;lda #$13                            ; Wait for vertical sync (0..16.6833)ms
-                              ;jsr OSBYTE                          ;*FX19
+;lda #$13                            ; Wait for vertical sync (0..16.6833)ms
+;jsr OSBYTE                          ;*FX19
             JPS delay
             LDB indexAnimDigHole
             LAB spriteNumbersAnimDigHole
@@ -192,10 +192,10 @@ checkHoleDigging:
             LDB yPosDigHole
             STB ypos8
             JPS plotSprite14x14 ;erase old sprite for hole digging
-                              ;lda #$07
-                              ;ldx #<sound4
-                              ;ldy #>sound4
-                              ;jsr OSWORD                          ;SOUND: digging hole
+;lda #$07
+;ldx #<sound4
+;ldy #>sound4
+;jsr OSWORD                          ;SOUND: digging hole
             DEB indexAnimDigHole
             BEQ doneDigging
             LDB indexAnimDigHole
@@ -226,18 +226,18 @@ checkPlayerFalling:
             LDB playerFalling
             CPI 0x00
             BEQ checkWhichKeysPressed ;not falling
-                              ;INB soundCounterWhileFalling
-                              ;LDA soundCounterWhileFalling
-                              ;ANI 0x01
-                              ;CPI 0x01
-                              ;BNE skipSoundFalling                ;update falling sound every other 'tick'
-                              ;;lda soundPitchWhileFalling
-                              ;;sta pitch5
-                              ;;lda #$07
-                              ;;ldx #<sound5
-                              ;;ldy #>sound5
-                              ;;jsr OSWORD                          ;SOUND: falling
-                              ;DEB soundPitchWhileFalling
+;INB soundCounterWhileFalling
+;LDA soundCounterWhileFalling
+;ANI 0x01
+;CPI 0x01
+;BNE skipSoundFalling                ;update falling sound every other 'tick'
+;;lda soundPitchWhileFalling
+;;sta pitch5
+;;lda #$07
+;;ldx #<sound5
+;;ldy #>sound5
+;;jsr OSWORD                          ;SOUND: falling
+;DEB soundPitchWhileFalling
 skipSoundFalling:
             LDB tmpYPos
             ADI 0x02
@@ -247,7 +247,7 @@ skipSoundFalling:
             CPI 0x07
             BNE skipS1
             CLB playerYBlkInternalDecimalOffset
-skipS1:        LDB playerYBlkInternalDecimalOffset
+skipS1:     LDB playerYBlkInternalDecimalOffset
             CPI 0x00
             BNE redrawPlayer
             INB playerYBlockPos ;adjust block ypos if needed
@@ -309,7 +309,6 @@ movePlayerRight:
 cannotGoRight:
             LDB playerXBlkInternalDecimalOffset
             CPI 0x01          ; cmp #$20
-                              ;CPI 0x00
             BNE checkRightEdgeOfScreen
             JPA redrawPlayer  ;blocked, cannot go right
 checkRightEdgeOfScreen:
@@ -325,7 +324,6 @@ checkGoingRightOnLine:
             ADI 0x1d
             PHS JPS loadPlayerMapPtr PLS ;inspect tile at the exact position of the player
             CPI 0x04          ;line
-                              ;JPS _Clear §§§
             BNE grSelectFrameWalking
             LDB playerYBlkInternalDecimalOffset
             CPI 0x00
@@ -358,11 +356,11 @@ grUpdatePos:
             CPI 0x07
             BNE grUp1
             LDI 0x00
-grUp1:        STB playerXBlkInternalDecimalOffset
+grUp1:      STB playerXBlkInternalDecimalOffset
             CPI 0x00
             BNE grUp2
             INB playerXBlockPos
-grUp2:        LDI 0x01
+grUp2:      LDI 0x01
             STB playerDirection ;i.e. player is facing right
             LDB playerXBlkInternalDecimalOffset
             CPI 0x00
@@ -477,11 +475,11 @@ glUpdatePos:
             CPI 0xff
             BNE glUp1
             LDI 0x06
-glUp1:        STB playerXBlkInternalDecimalOffset ;internal block offset-=20
+glUp1:      STB playerXBlkInternalDecimalOffset ;internal block offset-=20
             CPI 0x06
             BNE glUp2
             DEB playerXBlockPos
-glUp2:        LDI 0x00
+glUp2:      LDI 0x00
             STB playerDirection ;i.e. player is facing right
             LDB playerXBlkInternalDecimalOffset
             CPI 0x00
@@ -578,14 +576,14 @@ gdUpdatePos:
             BNE gdUp1
             LDI 0x00
             STB playerYBlkInternalDecimalOffset
-gdUp1:        LDB playerYBlkInternalDecimalOffset
+gdUp1:      LDB playerYBlkInternalDecimalOffset
             CPI 0x00
             BNE noinc_L0DB7
             INB playerYBlockPos ;yblockpos-- if crossed block boundary
             LDI 0x1c
             ADW playerMapPtr
 noinc_L0DB7:
-        JPA selectNextUpDownPlayerFrame
+            JPA selectNextUpDownPlayerFrame
 checkKeyUp:
             LDB _up
             CPI 1
@@ -650,7 +648,7 @@ guUpdatePos:
             BNE guUp1
             LDI 0x06
             STB playerYBlkInternalDecimalOffset
-guUp1:        LDB playerYBlkInternalDecimalOffset
+guUp1:      LDB playerYBlkInternalDecimalOffset
             CPI 0x06
             BNE nodec_L0E45
             DEB playerYBlockPos ;yblockpos-- if crossed block boundary
@@ -718,7 +716,7 @@ holeCheckThirdMarker:
 preNextHole:
             JPA nextHole
 ;
-drawHole:    PHS
+drawHole:   PHS
             LDR holeXBlockPos ; = holeYBlockPos
             STB mapX
             LDR holeYBlockPos ; = holeYBlockPos
@@ -730,10 +728,10 @@ drawHole:    PHS
             PLS
             STB spriteId
             JPS plotSprite14x14 ;draw new hole sprite
-nextHole:    DEB holeIndex
+nextHole:   DEB holeIndex
             BMI holesDone
             JPA checkHole     ;loop all over holes
-holesDone:    RTS
+holesDone:  RTS
 checkKeyDig:
             LDB _digLeft
             CPI 1
@@ -768,8 +766,6 @@ digPlayerFacingLeft:
             BEQ digInspectTile ;digInspectTile
                               ;INC                                    ;iny
 digInspectTile:
-                              ;tya
-                              ;clc
             ADB playerXBlockPos ;adc playerXBlockPos
             STZ 1             ;tay
             PHS JPS loadPlayerMapPtr PLS ;lda ($76),y    ;first inspect tile directly to the left or right of player (not floor tile!)
@@ -789,7 +785,6 @@ digCheckBrick:
             CPI 0x01          ;brick
             BNE preRedrawPlayer ;can only dig in brick, otherwise just redraw player
             MIZ 0xff,0
-                              ;sta ($76),y                         ;mark as hole
             LDZ 1
             PHS JPS storePlayerMapPtrX PLS
             MIZ 0x16,0        ;assume standing player facing right
@@ -806,7 +801,6 @@ digSetPlayerFrame:
             LDB playerXBlkInternalDecimalOffset ;hole is left
             CPI 0x00
             BEQ startDigging
-                              ;INB playerXBlockPos                 ;adjust xblockpos
 startDigging:
             LDB playerXBlockPos ;align to 10px block horizontally
             STB mapX
@@ -859,7 +853,7 @@ loadPlayerMapPtr:
             LDS 3
             ADW lPaddr
             LDB
-lPaddr:        0x0000
+lPaddr:     0x0000
             STS 3
             RTS
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -886,7 +880,7 @@ saveEnemyPtrM:
             ADW sEaddr
             LDS 3
             STB
-sEaddr:        0x0000
+sEaddr:     0x0000
             RTS
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ; Input: Y = Enemy Index A: Index Im Array Output: A = Inhalt
@@ -908,7 +902,7 @@ loadEnemyYidxA:
             LDS 3
             ADW lEYA1
             LDB
-lEYA1:        0x0000
+lEYA1:      0x0000
             STS 3
             RTS
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -921,18 +915,18 @@ storePlayerMapPtrX:
             ADW sPaddr
             LDZ 0
             STB
-sPaddr:        0x0000
+sPaddr:     0x0000
             STS 3
             RTS
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-delayLong:    MIZ <delayValue,1
+delayLong:  MIZ <delayValue,1
             JPA delay1
-delayLevel:    MIZ 0x00,1
+delayLevel: MIZ 0x00,1
             JPA delay1
-delay:        MIZ 0x10,1      ; 8
-delay1:        MIZ 0x00,0     ; 7
+delay:      MIZ 0x10,1      ; 8
+delay1:     MIZ 0x00,0     ; 7
             JPS KeyHandler
-delay2:        DEZ 0          ; 7
+delay2:     DEZ 0          ; 7
             BNE delay2        ; 5 12*256=3072*167ns=0,513024ms
             DEZ 1             ; 8
             BNE delay1        ; 5 (20+3072)*16=49472
@@ -1025,11 +1019,8 @@ sbfNoEnemyMatch:
 ; prepare falling sequence (frames, sound)
             LDI 0x01
             STB playerFalling
-;                lda     #$a0
-;                sta     soundPitchWhileFalling
             LDI 0x0f
             STB playerFrameNumber
-;.redrawPlayer   lda     #$13                            ; Wait for vertical sync (0..16.6833)ms
 redrawPlayer:
             JPS drawOrErasePlayerSprite ; erase player
             LDB tmpXPosLo
@@ -1049,7 +1040,7 @@ redrawPlayer:
             CPI 0x01          ;brick
             BNE rpDone
             STB playerIsDead  ;permanently trapped in a hole, i.e. dead
-rpDone:        JPA preCheckKeys
+rpDone:     JPA preCheckKeys
 collectGoldIngot:
             LDB playerMapPtr+0 ;mark empty tile in tilemap where gold ingot was
             STB coll1+0
@@ -1059,13 +1050,11 @@ collectGoldIngot:
             ADI 0x1d
             ADW coll1
             CLB
-coll1:        0x0000
+coll1:      0x0000
             LDB playerXBlockPos
             STB mapX
-                              ;JSR times14_16bit
             LDB playerYBlockPos
             STB mapY
-                              ;JSR times14
             JPS calcMapPtr2Pixel ; Input mapX, mapY (Block) Output: xpos16, ypos8 = 14 * mapX, 14 * mapY
             LDI 0x05          ;gold ingot
             STB spriteId
@@ -1139,8 +1128,6 @@ ivInitEnemies1:
             INW ptr1
             DEZ 1
             BNE ivInitEnemies1
-                              ;LDI 1
-                              ;STR ptr1
             DEZ 0
             BNE ivInitEnemies
             CLB playerFalling
@@ -1170,12 +1157,9 @@ nextEnemy:
             CPI 0x06          ; cmp #$06 enemyIndex=0..5 ;process 6 enemies but note that only max 5 are ever drawn
             BEQ waitVsyncAndReturn ; beq waitVsyncAndReturn
             JPS loadEnemyPointer
-                              ; ldx enemyIndex
-                              ; inc enemyCounter,x
             LDR enemyCounter
             INC
             STR enemyCounter
-                              ; lda enemyCounter,x
             ANI 0x01          ; and #$01
             CPI 0x01
             BEQ nextEnemy     ;do not update this enemy if its counter is even
@@ -1185,12 +1169,10 @@ nextEnemy:
             BCS delayLoop     ; do a delay if this enemy is inactive // to keep a similar speed independent of number of active enemies
             JPA updateEnemy   ; update active (valid) enemies only
 waitVsyncAndReturn:
-                              ; lda #$13 ; Wait for vertical sync (0..16.6833)ms
-                              ;jmp OSBYTE ;*FX19
             RTS
-delayLoop:    MIZ 0x02,0      ;delay loop
+delayLoop:  MIZ 0x02,0      ;delay loop
             MIZ 0x40,1
-delayLoop2:    JPS KeyHandler
+delayLoop2: JPS KeyHandler
             DEZ 1
             BNE delayLoop2
             DEZ 0
@@ -1221,7 +1203,7 @@ updateEnemy:
             LDR enemyYBlockPos
             INC
             STR enemyYBlockPos ;update block pos if needed
-updE01:        LDR enemyYBlkInternalDecimalOffset
+updE01:     LDR enemyYBlkInternalDecimalOffset
             CPI 0x00
             BNE preCheckSpecialCases
 ; enemy is vertically aligned to 10px block
@@ -1270,7 +1252,7 @@ ueNotFalling:
             LDR enemyYBlockPos
             INC
             STR enemyYBlockPos ;update block pos if needed
-ueNo01:        LDR enemyInHoleHeight
+ueNo01:     LDR enemyInHoleHeight
             DEC
             STR enemyInHoleHeight
             BNE preCheckEnemyTrapped ;haven't reached bottom of hole yet
@@ -1314,7 +1296,6 @@ ueUpdateHoleCounter:
             LDR enemyInHoleCountdown
             DEC
             STR enemyInHoleCountdown
-;                lda     enemyInHoleCountdown,x
             BNE ueCheckAlmostOutOfHole ;still stuck in hole, but almost time to get out?
             JPA ueDoneClimbingOutOrRespawning ;done in hole, time to climb out (or respawn if trapped)
 ;
@@ -1545,8 +1526,8 @@ ueScanRowsLeftOfEnemy:
             BEQ ueStartScanningRowsRightOfEnemy ;empty tile
             CPI 0x03          ;ladder
             BEQ ueStartScanningRowsRightOfEnemy
-			CPI 0x04							; hack3 enemy can go down if there is a line
-			BEQ ueStartScanningRowsRightOfEnemy
+            CPI 0x04                            ; hack3 enemy can go down if there is a line
+            BEQ ueStartScanningRowsRightOfEnemy
             CPI 0x31          ;trapdoor
             BEQ ueStartScanningRowsRightOfEnemy
             CPI 0x32          ;escape ladder
@@ -1570,26 +1551,20 @@ ueScanRowsRightOfEnemy:
             BEQ ueMovingRightAndDownImpossible
             CPI 0x31          ;trapdoor
             BEQ ueMovingRightAndDownImpossible
-            LDZ 1             ;tya
-                              ;clc
-            ADI 0x1c          ;adc #$1c
-                              ;tay
+            LDZ 1             ;tya ;clc
+            ADI 0x1c          ;adc #$1c ;tay
             PHS JPS loadEnemyPtrM PLS ; A = (ptrM),A = *(ptrM+A);inspect tile directly below enemy
             CPI 0x00
             BEQ ueDetermineEnemyDirection ;empty tile
             CPI 0x03          ;ladder
             BEQ ueDetermineEnemyDirection
-			CPI 0x04							; hack3 enemy can go down if there is a line
-			BEQ ueDetermineEnemyDirection
+            CPI 0x04                            ; hack3 enemy can go down if there is a line
+            BEQ ueDetermineEnemyDirection
             CPI 0x31          ;trapdoor
             BEQ ueDetermineEnemyDirection
             CPI 0x32          ;escape ladder
             BEQ ueDetermineEnemyDirection
-            INB distanceToPassageGoingRight		;increase distance to nearest passage of moving right and down to reach the player
-                              ;tya
-                              ;sec
-                              ;sbc #$1c
-                              ;tay
+            INB distanceToPassageGoingRight     ;increase distance to nearest passage of moving right and down to reach the player
             INZ 1             ; DEZ 1     ;iny
             LDZ 1
             CPI 0x1c          ;cpy #$1c
@@ -1615,14 +1590,12 @@ ueAtLeastOneRouteToPlayer:
 uePre2EnemyMovesLeftToPlayer:
             JPA ueEnemyMovesLeftToPlayer
 ueEnemyStraightDown:
-                              ;ldx enemyIndex
             LDR enemyXBlkInternalDecimalOffset ;lda enemyXBlkInternalDecimalOffset,x
             CPI 0x00
             BEQ ueEnemyMovesDown
             JPA ueEnemyMovesLeftToPlayer ;enemy is not aligned to passage straight down so move a little bit left first
 ueEnemyMovesDown:
-            LDR enemyYBlockPos ;lda enemyYBlockPos,x
-                              ;clc
+            LDR enemyYBlockPos ;lda enemyYBlockPos,x ;clc
             INC               ;adc #$01
             STB mapY
             JPS calcTileMapRowPtr ;jsr calcTileMapRowPtr
@@ -1713,14 +1686,14 @@ ueScanRowsLeftOfEnemy2:
             PHS JPS loadEnemyPtrM PLS ;lda ($80),y ; A = (ptrM),A = *(ptrM+A) ;inspect tile at exact location of enemy
             CPI 0x04          ;line
             BEQ ueIncDistanceToLeft
-			CPI 0x03                            ;hack2
-			BEQ hack2a
-			LDZ 1 									;tya
-			ADI 0x1c							;clc ;adc #$1c
+            CPI 0x03                            ;hack2
+            BEQ hack2a
+            LDZ 1                                   ;tya
+            ADI 0x1c                            ;clc ;adc #$1c
             PHS JPS loadEnemyPtrM PLS ;lda ($80),y ; A = (ptrM),A = *(ptrM+A) ;inspect tile directly below enemy
             CPI 0x00
             BEQ ueMovingLeftAndUpImpossible ;empty tile
-hack2a:		LDZ 1
+hack2a:     LDZ 1
             PHS JPS loadEnemyPtrM PLS ;sec ;sbc #$1c ;tay ;lda ($80),y ; A = (ptrM),A = *(ptrM+A) ;inspect tile at exact location of enemy
             CPI 0x03          ;ladder
             BEQ hack1a         ;ueStartScanningRowsRightOfEnemy2
@@ -1760,14 +1733,14 @@ ueScanRowsRightOfEnemy2:
             PHS JPS loadEnemyPtrM PLS ;lda ($80),y ; A = (ptrM),A = *(ptrM+A) ;inspect tile at exact location of enemy
             CPI 0x04          ;line
             BEQ ueIncDistanceToRight
-			CPI 0x03                            ;hack2
-			BEQ hack2b
-			LDZ 1
-			ADI 0x1c							;clc ;adc #$1c ;tay
+            CPI 0x03                            ;hack2
+            BEQ hack2b
+            LDZ 1
+            ADI 0x1c                            ;clc ;adc #$1c ;tay
             PHS JPS loadEnemyPtrM PLS ;lda ($80),y ; A = (ptrM),A = *(ptrM+A) ;inspect tile directly below enemy
             CPI 0x00
             BEQ ueMovingRightAndUpImpossible
-hack2b:		LDZ 1
+hack2b:     LDZ 1
             PHS JPS loadEnemyPtrM PLS ;sec ;sbc #$1c ;tay ;lda ($80),y ; A = (ptrM),A = *(ptrM+A) ;inspect tile at exact location of enemy
             CPI 0x03          ;ladder
             BEQ hack1b         ;ueDetermineEnemyDirection2
@@ -1784,7 +1757,7 @@ ueIncDistanceToRight:
             CPI 0x1c
             BNE ueScanRowsRightOfEnemy2 ;scan until right edge of screen
             JPA ueMovingRightAndUpImpossible
-hack1b:		LDB ptrM+0      ;check box above the ladder
+hack1b:     LDB ptrM+0      ;check box above the ladder
             STB lEaddr+0
             LDB ptrM+1
             STB lEaddr+1
@@ -1824,13 +1797,10 @@ ueAtLeastOneRouteToPlayer2:
 uePre2EnemyMovesLeftToPlayer2:
             JPA ueEnemyMovesLeftToPlayer
 ueEnemyStraightUp:
-                              ;ldx enemyIndex
-            LDR enemyYBlockPos ;lda enemyYBlockPos,x
-                              ;sec
+            LDR enemyYBlockPos ;lda enemyYBlockPos,x ;sec
             DEC               ;sbc #$01
             STB mapY
             JPS calcTileMapRowPtr ;jsr calcTileMapRowPtr
-                              ;ldx enemyIndex
             LDR enemyXBlockPos ;ldy enemyXBlockPos,x
             STZ 1
             PHS JPS loadEnemyPtrM PLS ;lda ($80),y ; A = (ptrM),A = *(ptrM+A) ;inspect tile directly above enemy
@@ -1851,7 +1821,6 @@ ueEnemyMovingUpLadder:
             STB mapX
                               ;jsr times10_16bit
             JPS calcMapPtr2Pixel ; Input mapX, mapY (Block) Output: xpos16, ypos8 = 14 * mapX, 14 * mapY
-                              ;ldx enemyIndex
             LDB xpos16+0      ;lda $70
             STB tmpXPosLo
             LDB xpos16+1      ;lda $71
@@ -1867,18 +1836,10 @@ ueSelectEnemyUpDownFrame2:
             LDI 0x27
 ueSetEnemyUpDownFrame2:
             STB enemyFrameNumber ;switch between enemy up/down frames
-                              ;lda tmpYPos
-                              ;sec
-                              ;sbc #$02
             LDI 0x02
-                              ;sta tmpYPos
             SU.B tmpYPos      ;move enemy up 2px (and adjust internal block offset and block ypos if needed)
             LDR enemyYBlkInternalDecimalOffset ;lda enemyYBlkInternalDecimalOffset,x
             DEC
-                              ;sec
-                              ;sed
-                              ;sbc #$20
-                              ;cld
             CPI 0xff
             BNE ueSetEnemy2
             LDR enemyYBlockPos
@@ -1887,9 +1848,6 @@ ueSetEnemyUpDownFrame2:
             LDI 0x06
 ueSetEnemy2:
             STR enemyYBlkInternalDecimalOffset ;sta enemyYBlkInternalDecimalOffset,x
-                              ;lda enemyYBlockPos,x
-                              ;sbc #$00
-                              ;sta enemyYBlockPos,x
             JPA ueCheckSpecialCases
 ueCheckEnemyXPos:
             LDR enemyXBlockPos ;lda enemyXBlockPos,x ;we already know that enemy ypos equals player ypos (in blocks)
@@ -1915,17 +1873,13 @@ ueCheckEnemyToTheRight:
             CPZ 0             ;cmp enemyYBlockPos,y
             BNE ueNextEnemyToTheRight
             LDR enemyXBlockPos ;lda enemyXBlockPos,x
-                              ;clc
             INC               ;adc #$01
             PHS
             LDI <_enemyXBlockPos PHS JPS loadEnemyYidxA PLS ; A=enemyXBlockPos,y
             STZ 0
             PLS
-                              ;clc
-                              ;adc #$01
             CPZ 0             ;cmp enemyXBlockPos,y
             BNE ueNextEnemyToTheRight
-                              ; von anderem Feind blockiert
             PLS
             JPA ueCheckSpecialCases ;another enemy is blocking this enemy from moving to the right
 ueNextEnemyToTheRight:
@@ -1937,8 +1891,6 @@ ueNextEnemyToTheRight:
             STB mapY
             JPS calcTileMapRowPtr ; input: A=tilemap row number, output: $81/$80=tilemap row ptr = tileMap+28*row
             LDR enemyXBlockPos ;ldy enemyXBlockPos,x
-                              ;TAY
-                              ;iny
             INC
             PHS JPS loadEnemyPtrM PLS ;lda ($80),y ; A = (ptrM),A = *(ptrM+A) ;inspect tile directly to the right of enemy
             CPI 0x01          ;brick
@@ -1972,11 +1924,8 @@ ueCheckIfMoveRightOnLine:
 ueSetHangingOnLineFrameA:
             LDI 0x29
 ueSetHangingOnLineFrameB:
-                              ;sec
             SUI 0x29          ;sbc #$29
-                              ;tay
             LAB enemyFrameOffset ;lda enemyFrameOffset,y
-                              ;clc
             ADI 0x29          ;adc #$29
             STB enemyFrameNumber ;sta enemyFrameNumber ;select correct frame for hanging on a line
             JPA ueMoveRightUpdatePos
@@ -1990,26 +1939,15 @@ ueWalkRight:
 ueSetWalkingRightFrameA:
             LDI 0x20
 ueSetWalkingRightFrameB:
-                              ;sec
             SUI 0x20          ;sbc #$29
-                              ;tay
             LAB enemyFrameOffset ;lda enemyFrameOffset,y
-                              ;clc
             ADI 0x20          ;adc #$29
             STB enemyFrameNumber ;sta enemyFrameNumber ;select correct frame for hanging on a line
 ueMoveRightUpdatePos:
-                              ;lda tmpXPosLo
-                              ;clc
-                              ;adc #$02
-                              ;sta tmpXPosLo
-                              ;lda tmpXPosHi
             LDI 0x02          ;adc #$00
             ADW tmpXPosLo     ;sta tmpXPosHi ;xpos+=2 and also update block pos and internal block offset
             LDR enemyXBlkInternalDecimalOffset ;lda enemyXBlkInternalDecimalOffset,x
-                              ;clc
-                              ;sed
             INC               ;adc #$20
-                              ;cld
             CPI 0x07
             BNE ueMoveR1
             LDR enemyXBlockPos ;lda enemyXBlockPos,x
@@ -2029,9 +1967,7 @@ ueCheckEnemyToTheLeft:
             LDS 1
             CPZ 0             ;cmp enemyYBlockPos,y
             BNE ueNextEnemyToTheLeft
-                              ; FÃ¤nger auf gleicher HÃ¶he
             LDR enemyXBlockPos ;lda enemyXBlockPos,x -> A = X-Position FÃ¤nger
-                              ;sec
             DEC               ;sbc #$01
             PHS
             LDI <_enemyXBlockPos PHS JPS loadEnemyYidxA PLS ;     A=enemyXBlockPos,y
@@ -2079,11 +2015,8 @@ ueCheckIfMoveLeftOnLine:      ; hier gehts nur noch nach links Frame auswÃ¤hlen
 ueSetHangingOnLineFrameA2:
             LDI 0x2c
 ueSetHangingOnLineFrameB2:
-                              ;sec
             SUI 0x2c          ;sbc #$29
-                              ;tay
             LAB enemyFrameOffset ;lda enemyFrameOffset,y
-                              ;clc
             ADI 0x2c          ;adc #$29
             STB enemyFrameNumber ;select correct frame for hanging on a line
             JPA ueMoveLeftUpdatePos
@@ -2097,28 +2030,14 @@ ueWalkLeft:
 ueSetWalkingLeftFrameA:
             LDI 0x23
 ueSetWalkingLeftFrameB:
-                              ;sec
             SUI 0x23          ;sbc #$29
-                              ;tay
             LAB enemyFrameOffset ;lda enemyFrameOffset,y
-                              ;clc
             ADI 0x23          ;adc #$29
             STB enemyFrameNumber ;select correct frame for walking left
 ueMoveLeftUpdatePos:
-                              ;lda tmpXPosLo
-                              ;sec
-                              ;sbc #$02
-                              ;sta tmpXPosLo
-                              ;lda tmpXPosHi
-                              ;sbc #$00
-                              ;sta tmpXPosHi
             LDI 0x02
             SUW tmpXPosLo     ;xpos-=2 and also update block pos and internal block offset
             LDR enemyXBlkInternalDecimalOffset ;lda enemyXBlkInternalDecimalOffset,x
-                              ;sec
-                              ;sed
-                              ;sbc #$20
-                              ;cld
             DEC
             CPI 0xff
             BNE ueMoveLe1
@@ -2126,11 +2045,10 @@ ueMoveLeftUpdatePos:
             DEC               ;sbc #$00
             STR enemyXBlockPos ;sta enemyXBlockPos,x
             LDI 0x06
-ueMoveLe1:    STR enemyXBlkInternalDecimalOffset ;sta enemyXBlkInternalDecimalOffset,x
+ueMoveLe1:  STR enemyXBlkInternalDecimalOffset ;sta enemyXBlkInternalDecimalOffset,x
             JPA ueCheckSpecialCases ;&&&& unneeded
 ueCheckSpecialCases:
             JPS KeyHandler
-                              ;ldx enemyIndex
             LDR enemyXBlkInternalDecimalOffset ;lda enemyXBlkInternalDecimalOffset,x
             CPI 0x00
             BNE ueEnemyCheckGoldIngot
@@ -2155,7 +2073,6 @@ ueCheckSpecialCases:
             CPI 0x03          ;ladder
             BEQ ueEnemyCheckGoldIngot
             LDZ 1             ;tya
-                              ;clc
             ADI 0x1c          ;adc #$1c
             STZ 1
             PHS JPS loadEnemyPtrM PLS ;lda ($80),y ; A = (ptrM),A = *(ptrM+A) ;inspect tile directly below enemy
@@ -2226,9 +2143,7 @@ ueEnemyCheckGoldIngot:
             BNE ueRedrawEnemy ;tile is not empty so cannot leave gold ingot here
             LDZ 1
             STB tmp02         ;remember current tile offset
-                              ;clc
             ADI 0x1c          ;adc #$1c
-                              ;tay
             PHS JPS loadEnemyPtrM PLS ;lda ($80),y ;inspect tile directly below enemy
             CPI 0x03          ;ladder
             BNE ueRedrawEnemy
@@ -2256,12 +2171,6 @@ ueEraseOrDrawGoldIngot:
             STB mapX
             LDR enemyYBlockPos
             STB mapY
-                              ;jsr    times10_16bit
-                              ;ldx    enemyIndex
-                              ;lda    enemyYBlockPos,x
-                              ;jsr    times10
-                              ;lda    #$05                            ;gold ingot
-                              ;jsr    plotSprite10x10                 ;erase (when picking up) or draw (when leaving behind) the gold ingot
             LDI 0x05
             STB spriteId
             JPS calcMapPtr2Pixel ; xpos16, ypos8 = 14 * mapX, 14 * mapY
@@ -2278,8 +2187,6 @@ ueRedrawEnemy:
             LDB enemyFrameNumber
             STR enemyFrames
             JPS uePlotEnemy   ;draw enemy at new pos
-                              ;DEB enemyIndex
-                              ;BMI ueDone
             JPA nextEnemy     ;repeat until all enemies are updates and redrawn
 ueDone:
             RTS
@@ -2296,7 +2203,7 @@ uePlotEnemy:
             JPS plotSprite14x14
             RTS
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-drawLevel:    JPS _Clear
+drawLevel:  JPS _Clear
             CLB numberOfGoldIngots
             CLB playerFalling
             LDI 0xff
@@ -2308,7 +2215,7 @@ drawLevel:    JPS _Clear
             STB tileMapPtr+1
             CLB mapX
             CLB mapY
-dl01:        LDR tileMapPtr
+dl01:       LDR tileMapPtr
             CPI 0x00
             BEQ dlNextTile
             CPI 0x32          ; escape ladder
@@ -2317,7 +2224,7 @@ dl01:        LDR tileMapPtr
             BNE dl02
             LDI 0x01
             JPA dlPrintTile
-dl02:        PHS
+dl02:       PHS
             JPS calcMapPtr2Pixel ; xpos16, ypos8 = 14 * mapX, 14 * mapY
             PLS
             CPI 0x07          ; player
@@ -2349,9 +2256,9 @@ dl02:        PHS
             STR tileMapPtr
             PLS
             JPA dlPrintTile
-dl03:        CPI 0x23         ;enemy
+dl03:       CPI 0x23         ;enemy
             BNE dl04
-bpEn:        PHS
+bpEn:       PHS
             LDI 0x00          ;lda #$00
             STR tileMapPtr    ;sta ($74),y    ;erase this enemy tile, because there are too many
             INB numberOfEnemies ;inc numberOfEnemies
@@ -2385,14 +2292,14 @@ dlStoreEnemyPos:
             STR enemyYBlkInternalDecimalOffset
             PLS
             JPA dlPrintTile
-dl04:        CPI 0x05         ;gold ingot
+dl04:       CPI 0x05         ;gold ingot
             BNE dlPrintTile
             PHS INB numberOfGoldIngots PLS
 dlPrintTile:
             STB spriteId
             JPS calcMapPtr2Pixel ; xpos16, ypos8 = 14 * mapX, 14 * mapY
             JPS plotSprite14x14
-dlNextTile:    INW tileMapPtr
+dlNextTile: INW tileMapPtr
             INB mapX
             CPI 28
             BNE dl01
@@ -2400,7 +2307,6 @@ dlNextTile:    INW tileMapPtr
             INB mapY
             CPI 16
             BNE dl01
-                              ; Spielfeld fertig
             JPS drawStrongLine
             LDI 23
             STB _YPos
@@ -2451,29 +2357,29 @@ printHSloop:
             LDI '1' PHS JPS printCharXY PLS
             LDI '0' PHS JPS printCharXY PLS
             JPA printHS2
-printHS1:    LDI '0' PHS JPS printCharXY PLS
+printHS1:   LDI '0' PHS JPS printCharXY PLS
             LDZ 0
             ADI 48 PHS JPS printCharXY PLS
-printHS2:    LDI '.' PHS JPS printCharXY PLS
+printHS2:   LDI '.' PHS JPS printCharXY PLS
             LDI 3 ADW _XPos
             LDI 11 STB tmp05  ; name 11 characters
-printHS3:    LDR ptrM PHS JPS printCharXY PLS ; write names
+printHS3:   LDR ptrM PHS JPS printCharXY PLS ; write names
             INW ptrM
             DEB tmp05
             BNE printHS3
             LDR ptrM
             CPI 0x00
             BNE printHS4
-debHS1:        LDI 5
+debHS1:     LDI 5
             JPA printHS5
-printHS4:    PHS INB _XPos JPS printThreeDigitNumber PLS
+printHS4:   PHS INB _XPos JPS printThreeDigitNumber PLS
             LDI 2 ADW _XPos
             INW ptrM
             LDB ptrM+0 STB ptrScore+0
             LDB ptrM+1 STB ptrScore+1
             JPS printScoreXY
             LDI 4
-printHS5:    ADW ptrM
+printHS5:   ADW ptrM
             INB _YPos
             INZ 0
             LDZ 0
@@ -2502,7 +2408,7 @@ nxtHGR2:    LDR ptr1          ; score byte
             DEB counterHGR
             BEQ zuwenig
             JPA nxtHGR1
-nxtHGR2a:    DEW ptrE         ; decimal place was the same, compare next place
+nxtHGR2a:   DEW ptrE         ; decimal place was the same, compare next place
             DEW ptr1
             DEZ 0
             BNE nxtHGR2
@@ -2517,7 +2423,7 @@ nxtHGR3:    DEB counterHGR    ; Enter score in list
             LDI <Highscore+160 STB ptr1+0 STB ptrE+0
             LDI >Highscore+160 STB ptr1+1 STB ptrE+1 ; ptr1 = ptrE -> letztes byte der Liste
             LDI 16 SUW ptr1   ; copy from STB ptr1 to STB ptrE
-nxtHGR3a:    DEW ptr1 DEW ptrE
+nxtHGR3a:   DEW ptr1 DEW ptrE
             LDR ptr1 STR ptrE
             DEB counterHGR
             BNE nxtHGR3a
@@ -2539,7 +2445,7 @@ nxtHGR3a2:
             ' * NAME:             * ',0,
             MIZ 11,0
             LDI 19 STB _XPos
-nxtHGR3b:    JPS _WaitInput
+nxtHGR3b:   JPS _WaitInput
             CPI 8             ; BS
             BEQ nxtHGRbs
             CPI 10            ; LF
@@ -2551,9 +2457,9 @@ nxtHGR3b:    JPS _WaitInput
             CPI 'a'
             BCC nxtHGR3c
             SUI 0x20          ; lower case to upper case
-nxtHGR3c:    CPI 0x5b         ; 'Z'+1 (It doesn't work that way, it's in the code 0x5a 0x01)
+nxtHGR3c:   CPI 0x5b         ; 'Z'+1 (It doesn't work that way, it's in the code 0x5a 0x01)
             BCS nxtHGR3b      ; invalid character
-nxtHGR3d:    STR ptrM         ; valid character
+nxtHGR3d:   STR ptrM         ; valid character
             PHS
             INW ptrM
             JPS printCharXY PLS
@@ -2563,7 +2469,7 @@ nxtHGR3d:    STR ptrM         ; valid character
             INZ 0
             DEB _XPos
             JPA nxtHGR3b
-nxtHGRbs:    LDZ 0
+nxtHGRbs:   LDZ 0
             CPI 11
             BEQ nxtHGR3b
             DEW ptrM
@@ -2573,11 +2479,11 @@ nxtHGRbs:    LDZ 0
             LDI ' ' PHS JPS printCharXY PLS
             DEB _XPos
             JPA nxtHGR3b
-nxtHGRcr:    LDZ 0 DEZ 0
+nxtHGRcr:   LDZ 0 DEZ 0
             BCC nxtHGRcr1
             LDI ' ' STR ptrM INW ptrM
             JPA nxtHGRcr
-nxtHGRcr1:    LDB level
+nxtHGRcr1:  LDB level
             STR ptrM INW ptrM
             LDI <score STB ptrE+0
             LDI >score STB ptrE+1
@@ -2591,7 +2497,7 @@ nxtHGR5:    LDR ptrE STR ptrM
             RTS
 zuwenig:    LDI 0             ; no new entry in the list
             RTS
-counterHGR:    0x00,
+counterHGR: 0x00,
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 saveHighscore:
             LDI <fileNameHGS
@@ -2599,15 +2505,15 @@ saveHighscore:
             LDI >fileNameHGS
             STB _ReadPtr+1
             JPS _FindFile
-			CPI 0
+            CPI 0
             BEQ loadHighscore
-			LDI 0xaa WDB 0x0555,0x05                  ; INIT FLASH WRITE PROGRAM
-			LDI 0x55 WDB 0x0aaa,0x02
-			LDI 0xa0 WDB 0x0555,0x05
-			LDI 0 WDR PtrA                            ; START WRITE PROCESS
-			MIZ 20,Z0                                 ; re-read a maximum times
+            LDI 0xaa WDB 0x0555,0x05                  ; INIT FLASH WRITE PROGRAM
+            LDI 0x55 WDB 0x0aaa,0x02
+            LDI 0xa0 WDB 0x0555,0x05
+            LDI 0 WDR PtrA                            ; START WRITE PROCESS
+            MIZ 20,Z0                                 ; re-read a maximum times
 de_delcheck: DEZ Z0 BCC saveHighRTS                    ; write took too long => ERROR!!!
-			RDR PtrA CPI 0 BNE de_delcheck          ; re-read FLASH location -> data okay?
+            RDR PtrA CPI 0 BNE de_delcheck          ; re-read FLASH location -> data okay?
             JPA loadHighscore
 saveHighRTS: RTS
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2626,8 +2532,8 @@ loadHighscore:
             RTS
 hgrFound1:  AIV 24,PtrA JPS OS_FlashA ; file found, skip header
             MIZ 160,0
-			MIV Highscore,PtrB
-hgrFound2:  RDR PtrA  		; copy block from A -> to B (formerly(ehemals): SEC RR1 §§§ ROL)
+            MIV Highscore,PtrB
+hgrFound2:  RDR PtrA        ; copy block from A -> to B (formerly(ehemals): SEC RR1 §§§ ROL)
             STR PtrB        ; store in RAM
             INW PtrA INW PtrB JPS OS_FlashA
             DEZ 0
@@ -2650,7 +2556,7 @@ bcdAdd:                       ;CLB bcdC        ; carry = 0 must be set in the ca
             LL4
             OR.B result
             RTS
-bcdNib:        LDB sum1
+bcdNib:     LDB sum1
             ANI 0x0f
             AD.B bcdC
             STB tmp1
@@ -2663,12 +2569,12 @@ bcdNib:        LDB sum1
             SUI 10
             STB tmp1
             INB bcdC
-done:        RTS
-result:        0x00,
-tmp1:        0x00,
-bcdC:        0x00,
-sum1:        0x00,
-sum2:        0x00,
+done:       RTS
+result:     0x00,
+tmp1:       0x00,
+bcdC:       0x00,
+sum1:       0x00,
+sum2:       0x00,
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ; score = score + 100 * y + x (bcd)
 addYXtoScoreBCD:
@@ -2722,8 +2628,6 @@ printScoreXY:
             STB tmp03
 nextScoreByte:
             DEW ptrScore
-                              ;MBZ tmp03,0
-                              ;LTX score
             LDR ptrScore
             PHS
             RL5
@@ -2803,7 +2707,7 @@ drawStrongLine1:
             LDI 128
             ADW tmp04
             MIZ 49,0
-dlLoop:        LDI 0xff
+dlLoop:     LDI 0xff
             STR tmp00
             STR tmp02
             STR tmp04
@@ -2825,7 +2729,7 @@ clearScreen:
             STB tmp02
             LDI 0xef
             STB tmp03
-clsEntry:    MIZ 120,1
+clsEntry:   MIZ 120,1
 cSloop1:    LDB tmp02
             STB tmp00
             JPS calcVRAM
@@ -2843,9 +2747,9 @@ cSloop1:    LDB tmp02
             MIZ 49,0
 cSloop2:    LDI 0x00
             STB
-lineT:        0x0000
+lineT:      0x0000
             STB
-lineB:        0x0000
+lineB:      0x0000
             INW lineT
             INW lineB
             DEZ 0
@@ -2862,7 +2766,7 @@ cSdelay:    DEB tmp00
             DEZ 1
             BNE cSloop1
             RTS
-calcVRAM:    CLB tmp01
+calcVRAM:   CLB tmp01
             LLW tmp00         ; *2
             LLW tmp00         ; *4
             LLW tmp00         ; *8
@@ -2930,13 +2834,6 @@ buildTileMap:
             STB levelDataPtr+0
             LDI    >levelData
             STB levelDataPtr+1
-;            MBZ level,0
-;            DEZ 0
-;            BEQ    calcDone
-;add224:        LDI    224
-;            ADW levelDataPtr+0
-;            DEZ 0
-;            BNE    add224
 calcDone:    LDI    <tileMap
             STB tileMapPtr+0
             LDI    >tileMap
@@ -3011,11 +2908,11 @@ lineloop:   LDR spritePtr
             MBZ shift,0
             DEZ 0
             BCC shiftdone
-shiftloop:    LLW buffer+0
+shiftloop:  LLW buffer+0
             RLB buffer+2
             DEZ 0
             BCS shiftloop
-shiftdone:    LDR vAddr
+shiftdone:  LDR vAddr
             XRB buffer+0
             STR vAddr
             INW vAddr
@@ -3063,16 +2960,16 @@ key_entry:
             BEQ is_pressed
 key_rts:    RTS
 is_left:    LDB pressed STB _left ORI 1 STB pressed CLB _right RTS
-is_right:    LDB pressed STB _right ORI 1 STB pressed CLB _left RTS
-is_up:        LDB pressed STB _up ORI 1 STB pressed CLB _down RTS
+is_right:   LDB pressed STB _right ORI 1 STB pressed CLB _left RTS
+is_up:      LDB pressed STB _up ORI 1 STB pressed CLB _down RTS
 is_down:    LDB pressed STB _down ORI 1 STB pressed CLB _up RTS
-is_digLeft:    LDB pressed STB _digLeft ORI 1 STB pressed CLB _digRight RTS
-is_digRight:    LDB pressed STB _digRight ORI 1 STB pressed CLB _digLeft RTS
-is_escape:    LDB pressed STB _escape ORI 1 STB pressed RTS
+is_digLeft: LDB pressed STB _digLeft ORI 1 STB pressed CLB _digRight RTS
+is_digRight: LDB pressed STB _digRight ORI 1 STB pressed CLB _digLeft RTS
+is_escape:  LDB pressed STB _escape ORI 1 STB pressed RTS
 is_quit:    LDB pressed STB _quit ORI 1 STB pressed RTS
 is_pressed: LDB pressed STB _pressed ORI 1 STB pressed RTS
 release:    CLB released_cntr ; IMPROVED PS2 RELEASE DETECTION by Michael Kamprath - Verbesserte PS2 losgelassen Erkennung
-key_wait:    INK              ; PS/2 Input and Clear - poll for max. 10.1ms
+key_wait:   INK              ; PS/2 Input and Clear - poll for max. 10.1ms
             CPI 0xff
             BNE key_release
             NOP NOP NOP NOP NOP NOP NOP ; wait for key up datagram
@@ -3095,7 +2992,7 @@ _pressed: 0
 ; ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ; Outputs the text immediately after JPS
 ; must be terminated 0
-printLine:    LDS 1
+printLine:  LDS 1
             STB ptr1+1
             LDS 2
             STB ptr1+0
@@ -3151,11 +3048,11 @@ printCharXY:
             CPI 24
             BCC pCxy1
             CLB _YPos
-pCxy1:        RTS
+pCxy1:      RTS
 ; ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ; print char 0x20..0x5f
 ; PHS: xLow, xHiht, y, char
-printChar:        LDS 4       ; Y
+printChar:      LDS 4       ; Y
                 LL6 STB vAddr+0 ;
                 LDS 4         ; Y
                 RL7 ANI 63 ADI >ViewPort STB vAddr+1
@@ -3200,14 +3097,14 @@ cl2:            STB buffer+0
                 MBZ shift,1   ; shift counter
                 DEZ 1         ; X coordinate
                 BCC cshiftdone
-cshiftloop:      LLW buffer+0 ; logical shift to the left word absolute vAddress
+cshiftloop:     LLW buffer+0 ; logical shift to the left word absolute vAddress
                 RLB buffer+2  ; rotate shift left byte absolute vAddress
                 SEC
                 RLW mask+0
                 RLB mask+2
                 DEZ 1
                 BCS cshiftloop ; branch on carry Set
-cshiftdone:        LDB mask+0
+cshiftdone:     LDB mask+0
                 ANR vAddr
                 STR vAddr
                 LDB buffer+0
@@ -3311,143 +3208,143 @@ deb001:     CPI 0
             BNE m001
             JPS printLine
             'LODERUNNER.DAT NOT FOUND.',0,
-halt:        JPA halt
-fileName:    'loderunner.dat', 0
+halt:       JPA halt
+fileName:   'loderunner.dat', 0
 
-m001:       AIV 22,PtrA JPS OS_FlashA                   	; search for target addr
-            RDR PtrA STZ PtrB+0 INV PtrA JPS OS_FlashA 		; destination addr -> PtrC, PtrD
+m001:       AIV 22,PtrA JPS OS_FlashA                       ; search for target addr
+            RDR PtrA STZ PtrB+0 INV PtrA JPS OS_FlashA      ; destination addr -> PtrC, PtrD
             RDR PtrA STZ PtrB+1 INV PtrA JPS OS_FlashA
-			MVV PtrA,PtrC MZZ PtrA+2,PtrC+2           		; PtrA -> PtrC
+            MVV PtrA,PtrC MZZ PtrA+2,PtrC+2                 ; PtrA -> PtrC
                               ; hier noch größe prüfen PtrB
 
 loadFlashLevel:
-			MVV PtrC,PtrA MZZ PtrC+2,PtrA+2           ; PtrC -> PtrA
+            MVV PtrC,PtrA MZZ PtrC+2,PtrA+2           ; PtrC -> PtrA
             MBZ level,0
 m002:       DEZ 0
             BEQ m003
             ;LDI 224 ADW PtrA JPS OS_FlashA
-            AIV 224,PtrA JPS OS_FlashA 			
+            AIV 224,PtrA JPS OS_FlashA          
             JPA m002
 m003:       MIZ 224,0
-			MIV levelData,PtrB
-m004:       RDR PtrA 		; copy block from A -> to B (formerly(ehemals): SEC RR1 §§§ ROL)
+            MIV levelData,PtrB
+m004:       RDR PtrA        ; copy block from A -> to B (formerly(ehemals): SEC RR1 §§§ ROL)
             STR PtrB        ; store in RAM
             INW PtrA INW PtrB JPS OS_FlashA
             DEZ 0
             BNE m004
             RTS
-OS_FlashA:      LDZ PtrA+1 RL5 ANI 0x0f                       ; is something in the upper nibble?
-                CPI 0 BEQ fa_farts
-                  AD.Z PtrA+2                                 ; there was something -> update bank register PtrA+2
-                  LDI 0x0f AN.Z PtrA+1                        ; correct PtrA+1
-  fa_farts:     RTS
+OS_FlashA:  LDZ PtrA+1 RL5 ANI 0x0f                       ; is something in the upper nibble?
+            CPI 0 BEQ fa_farts
+            AD.Z PtrA+2                                 ; there was something -> update bank register PtrA+2
+            LDI 0x0f AN.Z PtrA+1                        ; correct PtrA+1
+  fa_farts: RTS
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-progLastByte:    0
+progLastByte: 0
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ; #org 0x4000                            ; only better for debugging, line can be removed
-xpos16:            0x0000,
-ypos8:            0x00,
-spriteId:        0x00,
-tileMapPtr:        0x0000,
-spritePtr:        0x0000,
-shiftSprite:    0x00,
+xpos16:       0x0000,
+ypos8:        0x00,
+spriteId:     0x00,
+tileMapPtr:   0x0000,
+spritePtr:    0x0000,
+shiftSprite:  0x00,
 levelDataPtr:
-vAddr:            0x0000,
-lineCnt:        0x00,
-tmp00:            0x00,
-tmp01:            0x00,
-tmp02:            0x00,
-tmp03:            0x00,
-tmp04:            0x00,
-tmp05:            0x00,
-shift:            0x00,
-buffer:            0xff, 0xff, 0xff ; move buffer
-mask:            0xff, 0xff, 0xff,
-ptr1:            0x0000,      ; JPS printLine
-ptrE:            0x0000,      ; tileMapRawPointerEnemy
-ptrM:            0x0000,      ; ($80,$81) tileMapRawPointer
+vAddr:        0x0000,
+lineCnt:      0x00,
+tmp00:        0x00,
+tmp01:        0x00,
+tmp02:        0x00,
+tmp03:        0x00,
+tmp04:        0x00,
+tmp05:        0x00,
+shift:        0x00,
+buffer:       0xff, 0xff, 0xff ; move buffer
+mask:         0xff, 0xff, 0xff,
+ptr1:         0x0000,      ; JPS printLine
+ptrE:         0x0000,      ; tileMapRawPointerEnemy
+ptrM:         0x0000,      ; ($80,$81) tileMapRawPointer
 cntLevelComplete: 0x00,       ; ($82)
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-pressed:        0x00,
-gameRun:        0x00,
-;value:            0x0250,
-level:            0x01,
-lives:            0x05,
-score:            0x00,0x00,0x00,0x00, ;7 digits, BCD in 4 bytes
-ptrScore:        0x00, 0x00,
-mapX:            0x00,
-mapY:            0x00,
+pressed:      0x00,
+gameRun:      0x00,
+;value:       0x0250,
+level:        0x01,
+lives:        0x05,
+score:        0x00,0x00,0x00,0x00, ;7 digits, BCD in 4 bytes
+ptrScore:     0x00, 0x00,
+mapX:         0x00,
+mapY:         0x00,
 numberOfGoldIngots: 0x00,
 playerSpriteFrames: 0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x08,0x09,0x07,0x0b,0x0c,0x0a,0x0e,0x0d,0x0f,0x11,0x12,0x10,0x14,0x15,0x13,
-spriteNumbersAnimDigHole:    0x1c,0x1b,0x1a,0x19,0x18,0x01,
-playerMapPtr:    0x0000,      ; ($76,$77)
+spriteNumbersAnimDigHole: 0x1c,0x1b,0x1a,0x19,0x18,0x01,
+playerMapPtr: 0x0000,      ; ($76,$77)
 tmpXPosLo:    0x00,
 tmpXPosHi:    0x00,
-tmpYPos:    0x00,
-oldPlayerFrameNumber:    0x00,
+tmpYPos:      0x00,
+oldPlayerFrameNumber: 0x00,
 playerFrameNumber: 0x00,
 oldPlayerXPosLo: 0x00,
 oldPlayerXPosHi: 0x00,
-oldPlayerYPos: 0x00,
+oldPlayerYPos:   0x00,
 playerXBlockPos: 0x00,
 playerYBlockPos: 0x00,
 playerXBlkInternalDecimalOffset: 0x00,
 playerYBlkInternalDecimalOffset: 0x00,
 playerDirection: 0x00,
-playerIsDead: 0x00,
-playerFalling:    0x00,
-allGoldCollected:    0x00,
-diggingHole:    0x00,
-soundIndexGold:    0x00,
-playingSoundAllGold:    0x00,
-soundIndexAllGold:    0x00,
-soundPitchWhileFalling:    0x00,
+playerIsDead:    0x00,
+playerFalling:   0x00,
+allGoldCollected: 0x00,
+diggingHole:     0x00,
+soundIndexGold:  0x00,
+playingSoundAllGold: 0x00,
+soundIndexAllGold:   0x00,
+soundPitchWhileFalling: 0x00,
 indexAnimDigHole:    0x00,
 xPosDigHoleLo:    0x00,
 xPosDigHoleHi:    0x00,
-yPosDigHole:    0x00,
-xBlockPosDigHole:    0x00,
-yBlockPosDigHole:    0x00,
-soundCounterWhileFalling:    0x00,
-numberOfEnemies:    0x00,     ;holds number of enemies - 1 (so $ff means no enemies)
-enemyIndex:    0x00,
-enemyFrameNumber:    0x00,
-distanceToPassageGoingLeft:    0x00,
-distanceToPassageGoingRight:    0x00,
+yPosDigHole:      0x00,
+xBlockPosDigHole: 0x00,
+yBlockPosDigHole: 0x00,
+soundCounterWhileFalling: 0x00,
+numberOfEnemies:  0x00,     ;holds number of enemies - 1 (so $ff means no enemies)
+enemyIndex:       0x00,
+enemyFrameNumber: 0x00,
+distanceToPassageGoingLeft:  0x00,
+distanceToPassageGoingRight: 0x00,
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ; Array
-enemyXBlockPos:    0x0000,
-enemyYBlockPos:    0x0000,
-enemyXBlkInternalDecimalOffset:    0x0000, ;where pixel offset is 0,2,4,6,8 in a 10px block, this one goes 0,20,40,60,80 in decimal
-enemyYBlkInternalDecimalOffset:    0x0000, ;where pixel offset is 0,2,4,6,8 in a 10px block, this one goes 0,20,40,60,80 in decimal
-enemyXPosLo:    0x0000,       ;enemy pixel pos (lo)
-enemyXPosHi:    0x0000,       ;enemy pixel pos (hi)
-enemyYPos:        0x0000,
-enemyFrames:    0x0000,
-enemyFalling:    0x0000,      ;0=normal, 1=falling
-enemyCounter:    0x0000,
+enemyXBlockPos:       0x0000,
+enemyYBlockPos:       0x0000,
+enemyXBlkInternalDecimalOffset: 0x0000, ;where pixel offset is 0,2,4,6,8 in a 10px block, this one goes 0,20,40,60,80 in decimal
+enemyYBlkInternalDecimalOffset: 0x0000, ;where pixel offset is 0,2,4,6,8 in a 10px block, this one goes 0,20,40,60,80 in decimal
+enemyXPosLo:          0x0000,       ;enemy pixel pos (lo)
+enemyXPosHi:          0x0000,       ;enemy pixel pos (hi)
+enemyYPos:            0x0000,
+enemyFrames:          0x0000,
+enemyFalling:         0x0000,      ;0=normal, 1=falling
+enemyCounter:         0x0000,
 enemyInHoleHeight:    0x0000, ;5=top of hole, 4, 3, 2, 1, 0=bottom of hole (5*2px=10px)
-enemyInHoleCountdown:    0x0000, ;time spent by enemy in hole before climbing out, starting at &1E, counting down to 0
-enemyRespawnCountdown:    0x0000, ;countdown from 10 to 0 before enemy is respawned at the top of the screen after being buried (not just trapped) in a hole
-enemyHoldsGoldIngot:    0x0000,
+enemyInHoleCountdown: 0x0000, ;time spent by enemy in hole before climbing out, starting at &1E, counting down to 0
+enemyRespawnCountdown: 0x0000, ;countdown from 10 to 0 before enemy is respawned at the top of the screen after being buried (not just trapped) in a hole
+enemyHoldsGoldIngot:  0x0000,
 ; 6 * 15 Byte = 90
 enemyArray:        enemyArray0,enemyArray1,enemyArray2,enemyArray3,enemyArray4,enemyArray5,
-enemyArray0:    0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-enemyArray1:    0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-enemyArray2:    0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-enemyArray3:    0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-enemyArray4:    0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-enemyArray5:    0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+enemyArray0: 0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+enemyArray1: 0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+enemyArray2: 0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+enemyArray3: 0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+enemyArray4: 0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+enemyArray5: 0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 enemyFrameOffset:
-            0x01,0x02,0x00,0x04,0x05,0x03,
+             0x01,0x02,0x00,0x04,0x05,0x03,
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-holeIndex:    0x00,
+holeIndex:        0x00,
 holeAnimFrame:    0x00,
-holeFillCounters:    0x0000,  ; don't change order!!!
+holeFillCounters: 0x0000,  ; don't change order!!!
 holeXBlockPos:    0x0000,
 holeYBlockPos:    0x0000,
 ; 11*(3) Byte = 33
-holeArray:    0,0,0,          ; If this array overflows, the part assignment in the map will be corrupted
+holeArray:  0,0,0,          ; If this array overflows, the part assignment in the map will be corrupted
             0,0,0,
             0,0,0,
             0,0,0,
@@ -3483,125 +3380,125 @@ levelNibbleToTile:
             0x00,             ;   undefined, default to empty tile
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 alphaNumSprites:
-    0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00, ; 0x20   space
-    0x38,0x38,0x38,0x38,0x20,0x20,0x00,0x30, ; 0x21   !
-    0x00,0x36,0x36,0x24,0x00,0x00,0x00,0x00, ; 0x22   "
-    0x66,0xff,0xff,0x66,0x66,0xff,0xff,0x66, ; 0x23   #
-    0x18,0x7e,0x03,0x7e,0xe0,0xe0,0x7e,0x18, ; 0x24   $
-    0xc7,0xe5,0x77,0x38,0x1c,0xee,0xa7,0xe3, ; 0x25   %
-    0x06,0x09,0x09,0x46,0x6d,0x11,0x71,0xce, ; 0x26   &
-    0x00,0x0c,0x0c,0x08,0x00,0x00,0x00,0x00, ; 0x27   '
-    0x38,0x1c,0x0e,0x0e,0x0e,0x0e,0x1c,0x38, ; 0x28   (
-    0x1c,0x38,0x70,0x70,0x70,0x70,0x38,0x1c, ; 0x29   )
-    0x99,0x5a,0x3c,0xff,0xff,0x3c,0x5a,0x99, ; 0x2a   *
-    0x18,0x18,0x18,0xff,0xff,0x18,0x18,0x18, ; 0x2b   +
-    0x00,0x00,0x00,0x00,0x0c,0x0c,0x08,0x04, ; 0x2c   ,
-    0x00,0x00,0x00,0xff,0xff,0x00,0x00,0x00, ; 0x2d   -
-    0x00,0x00,0x00,0x00,0x00,0x0c,0x0c,0x00, ; 0x2e   .
-    0xc0,0xe0,0x70,0x38,0x1c,0x0e,0x07,0x03, ; 0x2f   /
-    0xff,0xc3,0xc3,0xc3,0xf3,0xf3,0xf3,0xff, ; 0x30   0
-    0x1e,0x1e,0x18,0x18,0x18,0x18,0x7e,0x7e, ; 0x31   1
-    0xff,0xc3,0xc0,0xff,0x03,0x03,0xf3,0xff, ; 0x32   2
-    0xff,0xc3,0xc0,0xfc,0xc0,0xc0,0xc3,0xff, ; 0x33   3
-    0xcf,0xcf,0xcf,0xff,0xc0,0xc0,0xc0,0xc0, ; 0x34   4
-    0xff,0x03,0x03,0xff,0xf0,0xf0,0xf0,0xff, ; 0x35   5
-    0xff,0xc3,0x03,0xff,0xe3,0xe3,0xe3,0xff, ; 0x36   6
-    0xff,0xf0,0xf0,0xf0,0x3c,0x0c,0x0c,0x0c, ; 0x37   7
-    0xfc,0xcc,0xcc,0xff,0xc3,0xc3,0xc3,0xff, ; 0x38   8
-    0xff,0xc3,0xc3,0xff,0xf0,0xf0,0xf0,0xf0, ; 0x39   9
-    0x00,0x0c,0x0c,0x00,0x00,0x0c,0x0c,0x00, ; 0x3a   :
-    0x00,0x18,0x18,0x00,0x18,0x18,0x10,0x08, ; 0x3b   ;
-    0x06,0x06,0x00,0x0c,0x1c,0xd8,0xc0,0x00, ; 0x3c   < ;other use
-    0x00,0x00,0x00,0x00,0x00,0xdb,0xdb,0x00, ; 0x3d   = ;other use
-    0x60,0x60,0x00,0x30,0x38,0x1b,0x03,0x00, ; 0x3e   > ;other use
-    0x3c,0x62,0x70,0x38,0x18,0x18,0x00,0x18, ; 0x3f   ?
-    0x3c,0x42,0x99,0xa5,0x45,0x39,0x02,0x7c, ; 0x40   @
-    0xfc,0xcc,0xcc,0xff,0xc3,0xc3,0xf3,0xf3, ; 0x41   A
-    0x3f,0x33,0x33,0xff,0xc3,0xc3,0xc3,0xff, ; 0x42   B
-    0xff,0xc3,0x03,0x03,0x0f,0x0f,0xcf,0xff, ; 0x43   C
-    0x3f,0xc3,0xc3,0xc3,0xcf,0xcf,0xcf,0x3f, ; 0x44   D
-    0xff,0x0f,0x0f,0x3f,0x03,0x03,0x03,0xff, ; 0x45   E
-    0xff,0x0f,0x0f,0x3f,0x03,0x03,0x03,0x03, ; 0x46   F
-    0xff,0xc3,0x03,0x03,0xf3,0xf3,0xc3,0xff, ; 0x47   G
-    0xc3,0xc3,0xc3,0xff,0xcf,0xcf,0xcf,0xcf, ; 0x48   H
-    0x08,0x08,0x08,0x38,0x38,0x38,0x38,0x38, ; 0x49   I
-    0x20,0x20,0x20,0xe0,0xe0,0xe0,0xe3,0xff, ; 0x4a   J
-    0xc3,0xe3,0x73,0x3f,0xff,0xcf,0xcf,0xcf, ; 0x4b   K
-    0x03,0x03,0x03,0x0f,0x0f,0x0f,0x0f,0xff, ; 0x4c   L
-    0xc3,0xcf,0xff,0xff,0xc3,0xc3,0xc3,0xc3, ; 0x4d   M
-    0xc3,0xc3,0xcf,0xff,0xff,0xf3,0xc3,0xc3, ; 0x4e   N
-    0xff,0xf3,0xf3,0xf3,0xc3,0xc3,0xc3,0xff, ; 0x4f   O
-    0xff,0xc3,0xc3,0xff,0x0f,0x0f,0x0f,0x0f, ; 0x50   P
-    0xff,0xf3,0xf3,0xc3,0xc3,0x23,0x63,0xdf, ; 0x51   Q
-    0xff,0xc3,0xc3,0xff,0x3f,0x3f,0xcf,0xcf, ; 0x52   R
-    0xff,0xc3,0x03,0xff,0xf0,0xf0,0xf3,0xff, ; 0x53   S
-    0xff,0x0c,0x0c,0x3c,0x3c,0x3c,0x3c,0x3c, ; 0x54   T
-    0xc3,0xc3,0xc3,0xcf,0xcf,0xcf,0xcf,0xff, ; 0x55   U
-    0xcf,0xcf,0xcf,0xcf,0xcf,0xff,0x3c,0x0c, ; 0x56   V
-    0xc3,0xc3,0xc3,0xc3,0xff,0xff,0xcf,0xc3, ; 0x57   W
-    0xc3,0xc3,0xc3,0x3c,0x3c,0xc3,0xc3,0xc3, ; 0x58   X
-    0xf3,0xf3,0xf3,0xff,0x3c,0x3c,0x3c,0x3c, ; 0x59   Y
-    0xff,0x81,0x80,0xf8,0x3f,0x01,0xc1,0xff, ; 0x5a   Z
-    0x00,0xc0,0xd8,0x1c,0x0c,0x00,0x06,0x06, ; 0x5b   [ ;other use
-    0x00,0xdb,0xdb,0x00,0x00,0x00,0x00,0x00, ; 0x5c   \ ;other use
-    0x00,0x03,0x1b,0x38,0x30,0x00,0x60,0x60, ; 0x5d   ] ;other use
-    0x06,0x06,0x00,0x18,0x18,0x00,0x06,0x06, ; 0x5e   ^ ;other use
-    0x60,0x60,0x00,0x18,0x18,0x00,0x60,0x60, ; 0x5f   _ ;other use
+0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00, ; 0x20   space
+0x38,0x38,0x38,0x38,0x20,0x20,0x00,0x30, ; 0x21   !
+0x00,0x36,0x36,0x24,0x00,0x00,0x00,0x00, ; 0x22   "
+0x66,0xff,0xff,0x66,0x66,0xff,0xff,0x66, ; 0x23   #
+0x18,0x7e,0x03,0x7e,0xe0,0xe0,0x7e,0x18, ; 0x24   $
+0xc7,0xe5,0x77,0x38,0x1c,0xee,0xa7,0xe3, ; 0x25   %
+0x06,0x09,0x09,0x46,0x6d,0x11,0x71,0xce, ; 0x26   &
+0x00,0x0c,0x0c,0x08,0x00,0x00,0x00,0x00, ; 0x27   '
+0x38,0x1c,0x0e,0x0e,0x0e,0x0e,0x1c,0x38, ; 0x28   (
+0x1c,0x38,0x70,0x70,0x70,0x70,0x38,0x1c, ; 0x29   )
+0x99,0x5a,0x3c,0xff,0xff,0x3c,0x5a,0x99, ; 0x2a   *
+0x18,0x18,0x18,0xff,0xff,0x18,0x18,0x18, ; 0x2b   +
+0x00,0x00,0x00,0x00,0x0c,0x0c,0x08,0x04, ; 0x2c   ,
+0x00,0x00,0x00,0xff,0xff,0x00,0x00,0x00, ; 0x2d   -
+0x00,0x00,0x00,0x00,0x00,0x0c,0x0c,0x00, ; 0x2e   .
+0xc0,0xe0,0x70,0x38,0x1c,0x0e,0x07,0x03, ; 0x2f   /
+0xff,0xc3,0xc3,0xc3,0xf3,0xf3,0xf3,0xff, ; 0x30   0
+0x1e,0x1e,0x18,0x18,0x18,0x18,0x7e,0x7e, ; 0x31   1
+0xff,0xc3,0xc0,0xff,0x03,0x03,0xf3,0xff, ; 0x32   2
+0xff,0xc3,0xc0,0xfc,0xc0,0xc0,0xc3,0xff, ; 0x33   3
+0xcf,0xcf,0xcf,0xff,0xc0,0xc0,0xc0,0xc0, ; 0x34   4
+0xff,0x03,0x03,0xff,0xf0,0xf0,0xf0,0xff, ; 0x35   5
+0xff,0xc3,0x03,0xff,0xe3,0xe3,0xe3,0xff, ; 0x36   6
+0xff,0xf0,0xf0,0xf0,0x3c,0x0c,0x0c,0x0c, ; 0x37   7
+0xfc,0xcc,0xcc,0xff,0xc3,0xc3,0xc3,0xff, ; 0x38   8
+0xff,0xc3,0xc3,0xff,0xf0,0xf0,0xf0,0xf0, ; 0x39   9
+0x00,0x0c,0x0c,0x00,0x00,0x0c,0x0c,0x00, ; 0x3a   :
+0x00,0x18,0x18,0x00,0x18,0x18,0x10,0x08, ; 0x3b   ;
+0x06,0x06,0x00,0x0c,0x1c,0xd8,0xc0,0x00, ; 0x3c   < ;other use
+0x00,0x00,0x00,0x00,0x00,0xdb,0xdb,0x00, ; 0x3d   = ;other use
+0x60,0x60,0x00,0x30,0x38,0x1b,0x03,0x00, ; 0x3e   > ;other use
+0x3c,0x62,0x70,0x38,0x18,0x18,0x00,0x18, ; 0x3f   ?
+0x3c,0x42,0x99,0xa5,0x45,0x39,0x02,0x7c, ; 0x40   @
+0xfc,0xcc,0xcc,0xff,0xc3,0xc3,0xf3,0xf3, ; 0x41   A
+0x3f,0x33,0x33,0xff,0xc3,0xc3,0xc3,0xff, ; 0x42   B
+0xff,0xc3,0x03,0x03,0x0f,0x0f,0xcf,0xff, ; 0x43   C
+0x3f,0xc3,0xc3,0xc3,0xcf,0xcf,0xcf,0x3f, ; 0x44   D
+0xff,0x0f,0x0f,0x3f,0x03,0x03,0x03,0xff, ; 0x45   E
+0xff,0x0f,0x0f,0x3f,0x03,0x03,0x03,0x03, ; 0x46   F
+0xff,0xc3,0x03,0x03,0xf3,0xf3,0xc3,0xff, ; 0x47   G
+0xc3,0xc3,0xc3,0xff,0xcf,0xcf,0xcf,0xcf, ; 0x48   H
+0x08,0x08,0x08,0x38,0x38,0x38,0x38,0x38, ; 0x49   I
+0x20,0x20,0x20,0xe0,0xe0,0xe0,0xe3,0xff, ; 0x4a   J
+0xc3,0xe3,0x73,0x3f,0xff,0xcf,0xcf,0xcf, ; 0x4b   K
+0x03,0x03,0x03,0x0f,0x0f,0x0f,0x0f,0xff, ; 0x4c   L
+0xc3,0xcf,0xff,0xff,0xc3,0xc3,0xc3,0xc3, ; 0x4d   M
+0xc3,0xc3,0xcf,0xff,0xff,0xf3,0xc3,0xc3, ; 0x4e   N
+0xff,0xf3,0xf3,0xf3,0xc3,0xc3,0xc3,0xff, ; 0x4f   O
+0xff,0xc3,0xc3,0xff,0x0f,0x0f,0x0f,0x0f, ; 0x50   P
+0xff,0xf3,0xf3,0xc3,0xc3,0x23,0x63,0xdf, ; 0x51   Q
+0xff,0xc3,0xc3,0xff,0x3f,0x3f,0xcf,0xcf, ; 0x52   R
+0xff,0xc3,0x03,0xff,0xf0,0xf0,0xf3,0xff, ; 0x53   S
+0xff,0x0c,0x0c,0x3c,0x3c,0x3c,0x3c,0x3c, ; 0x54   T
+0xc3,0xc3,0xc3,0xcf,0xcf,0xcf,0xcf,0xff, ; 0x55   U
+0xcf,0xcf,0xcf,0xcf,0xcf,0xff,0x3c,0x0c, ; 0x56   V
+0xc3,0xc3,0xc3,0xc3,0xff,0xff,0xcf,0xc3, ; 0x57   W
+0xc3,0xc3,0xc3,0x3c,0x3c,0xc3,0xc3,0xc3, ; 0x58   X
+0xf3,0xf3,0xf3,0xff,0x3c,0x3c,0x3c,0x3c, ; 0x59   Y
+0xff,0x81,0x80,0xf8,0x3f,0x01,0xc1,0xff, ; 0x5a   Z
+0x00,0xc0,0xd8,0x1c,0x0c,0x00,0x06,0x06, ; 0x5b   [ ;other use
+0x00,0xdb,0xdb,0x00,0x00,0x00,0x00,0x00, ; 0x5c   \ ;other use
+0x00,0x03,0x1b,0x38,0x30,0x00,0x60,0x60, ; 0x5d   ] ;other use
+0x06,0x06,0x00,0x18,0x18,0x00,0x06,0x06, ; 0x5e   ^ ;other use
+0x60,0x60,0x00,0x18,0x18,0x00,0x60,0x60, ; 0x5f   _ ;other use
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 spriteAddr16:
-    spriteData,
-    brick,
-    solid,
-    ladder,
-    line,
-    ingot,
-    sprite6,
-    sprite7,
-    sprite8,
-    sprite9,
-    sprite10,
-    sprite11,
-    sprite12,
-    sprite13,
-    sprite14,
-    sprite15,
-    sprite16,
-    sprite17,
-    sprite18,
-    sprite19,
-    sprite20,
-    sprite21,
-    sprite22,
-    sprite23,
-    sprite24,
-    sprite25,
-    sprite26,
-    sprite27,
-    sprite28,
-    sprite29,
-    sprite30,
-    sprite31,
-    sprite32,
-    sprite33,
-    sprite34,
-    sprite35,
-    sprite36,
-    sprite37,
-    sprite38,
-    sprite39,
-    sprite40,
-    sprite41,
-    sprite42,
-    sprite43,
-    sprite44,
-    sprite45,
-    sprite46,
-    sprite47,
-    sprite48,
-    sprite49,
-    sprite50,
-    sprite51,
-    sprite51,
+ spriteData,
+ brick,
+ solid,
+ ladder,
+ line,
+ ingot,
+ sprite6,
+ sprite7,
+ sprite8,
+ sprite9,
+ sprite10,
+ sprite11,
+ sprite12,
+ sprite13,
+ sprite14,
+ sprite15,
+ sprite16,
+ sprite17,
+ sprite18,
+ sprite19,
+ sprite20,
+ sprite21,
+ sprite22,
+ sprite23,
+ sprite24,
+ sprite25,
+ sprite26,
+ sprite27,
+ sprite28,
+ sprite29,
+ sprite30,
+ sprite31,
+ sprite32,
+ sprite33,
+ sprite34,
+ sprite35,
+ sprite36,
+ sprite37,
+ sprite38,
+ sprite39,
+ sprite40,
+ sprite41,
+ sprite42,
+ sprite43,
+ sprite44,
+ sprite45,
+ sprite46,
+ sprite47,
+ sprite48,
+ sprite49,
+ sprite50,
+ sprite51,
+ sprite51,
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 spriteData:
 0x54,0x55, 0xa8,0xaa, 0x54,0x55, 0xa8,0xaa, 0x54,0x55, 0xa8,0xaa, 0x54,0x55,
@@ -3780,43 +3677,43 @@ levelData:
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ; tilemap for current level, 28*(16+1)=476 tiles
 tileMap:
-    0x00,0x00,0x00,0x05,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-    0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x03,0x03,0x02,0x02,0x01,
-    0x02,0x02,0x03,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x05,0x00,
-    0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x03,0x03,0x00,0x00,0x00,0x00,0x00,0x03,0x00,
-    0x00,0x00,0x00,0x03,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x03,0x00,0x05,
-    0x00,0x00,0x00,0x03,0x03,0x00,0x05,0x00,0x23,0x00,0x03,0x00,0x00,0x00,0x00,0x03,
-    0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x03,0x01,0x01,0x01,0x01,0x01,0x03,
-    0x03,0x01,0x02,0x01,0x02,0x01,0x03,0x00,0x00,0x00,0x00,0x03,0x00,0x00,0x00,0x00,
-    0x00,0x00,0x00,0x00,0x00,0x03,0x00,0x00,0x00,0x00,0x00,0x00,0x03,0x00,0x00,0x00,
-    0x00,0x00,0x03,0x04,0x04,0x04,0x04,0x03,0x04,0x04,0x04,0x04,0x04,0x04,0x00,0x00, ; 160
-    0x23,0x03,0x00,0x00,0x00,0x00,0x00,0x00,0x03,0x00,0x00,0x00,0x00,0x00,0x03,0x00,
-    0x00,0x00,0x00,0x03,0x00,0x00,0x00,0x00,0x00,0x03,0x01,0x01,0x01,0x02,0x02,0x02,
-    0x02,0x02,0x02,0x03,0x03,0x00,0x00,0x00,0x00,0x00,0x03,0x00,0x00,0x00,0x00,0x03,
-    0x00,0x00,0x05,0x00,0x00,0x03,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x03,
-    0x03,0x00,0x00,0x00,0x23,0x00,0x03,0x00,0x05,0x00,0x00,0x03,0x01,0x01,0x01,0x01,
-    0x01,0x03,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x03,0x02,0x01,0x01,0x01,
-    0x02,0x01,0x01,0x02,0x01,0x01,0x02,0x03,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-    0x00,0x03,0x01,0x01,0x01,0x03,0x01,0x01,0x02,0x01,0x01,0x01,0x02,0x00,0x00,0x00,
-    0x00,0x00,0x00,0x03,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x03,0x00,0x00,
-    0x00,0x03,0x00,0x00,0x02,0x05,0x00,0x00,0x02,0x00,0x00,0x00,0x00,0x00,0x00,0x03, ; 320
-    0x00,0x00,0x00,0x04,0x04,0x04,0x04,0x04,0x04,0x03,0x00,0x00,0x00,0x03,0x00,0x05,
-    0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x03,0x01,0x01,0x01,0x02,0x02,0x02,0x02,
-    0x00,0x00,0x00,0x00,0x00,0x03,0x00,0x00,0x01,0x01,0x01,0x01,0x00,0x00,0x00,0x00,
-    0x00,0x00,0x00,0x00,0x03,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-    0x00,0x03,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-    0x03,0x00,0x00,0x00,0x00,0x07,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x03,0x00,0x00, ; 416
-    0x00,0x00,0x00,0x00,      ; 420
+0x00,0x00,0x00,0x05,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x03,0x03,0x02,0x02,0x01,
+0x02,0x02,0x03,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x05,0x00,
+0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x03,0x03,0x00,0x00,0x00,0x00,0x00,0x03,0x00,
+0x00,0x00,0x00,0x03,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x03,0x00,0x05,
+0x00,0x00,0x00,0x03,0x03,0x00,0x05,0x00,0x23,0x00,0x03,0x00,0x00,0x00,0x00,0x03,
+0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x03,0x01,0x01,0x01,0x01,0x01,0x03,
+0x03,0x01,0x02,0x01,0x02,0x01,0x03,0x00,0x00,0x00,0x00,0x03,0x00,0x00,0x00,0x00,
+0x00,0x00,0x00,0x00,0x00,0x03,0x00,0x00,0x00,0x00,0x00,0x00,0x03,0x00,0x00,0x00,
+0x00,0x00,0x03,0x04,0x04,0x04,0x04,0x03,0x04,0x04,0x04,0x04,0x04,0x04,0x00,0x00, ; 160
+0x23,0x03,0x00,0x00,0x00,0x00,0x00,0x00,0x03,0x00,0x00,0x00,0x00,0x00,0x03,0x00,
+0x00,0x00,0x00,0x03,0x00,0x00,0x00,0x00,0x00,0x03,0x01,0x01,0x01,0x02,0x02,0x02,
+0x02,0x02,0x02,0x03,0x03,0x00,0x00,0x00,0x00,0x00,0x03,0x00,0x00,0x00,0x00,0x03,
+0x00,0x00,0x05,0x00,0x00,0x03,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x03,
+0x03,0x00,0x00,0x00,0x23,0x00,0x03,0x00,0x05,0x00,0x00,0x03,0x01,0x01,0x01,0x01,
+0x01,0x03,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x03,0x02,0x01,0x01,0x01,
+0x02,0x01,0x01,0x02,0x01,0x01,0x02,0x03,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+0x00,0x03,0x01,0x01,0x01,0x03,0x01,0x01,0x02,0x01,0x01,0x01,0x02,0x00,0x00,0x00,
+0x00,0x00,0x00,0x03,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x03,0x00,0x00,
+0x00,0x03,0x00,0x00,0x02,0x05,0x00,0x00,0x02,0x00,0x00,0x00,0x00,0x00,0x00,0x03, ; 320
+0x00,0x00,0x00,0x04,0x04,0x04,0x04,0x04,0x04,0x03,0x00,0x00,0x00,0x03,0x00,0x05,
+0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x03,0x01,0x01,0x01,0x02,0x02,0x02,0x02,
+0x00,0x00,0x00,0x00,0x00,0x03,0x00,0x00,0x01,0x01,0x01,0x01,0x00,0x00,0x00,0x00,
+0x00,0x00,0x00,0x00,0x03,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+0x00,0x03,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+0x03,0x00,0x00,0x00,0x00,0x07,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x03,0x00,0x00, ; 416
+0x00,0x00,0x00,0x00,      ; 420
 ; bottom row of tilemap is always 28 bricks
-    0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,
-    0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01, ; +28=448
+0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,
+0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01, ; +28=448
 ; very last row of tilemap is always 28 red bar blocks
-    0x06,0x06,0x06,0x06,0x06,0x06,0x06,0x06,0x06,0x06,0x06,0x06,0x06,0x06,0x06,0x06,
-    0x06,0x06,0x06,0x06,0x06,0x06,0x06,0x06,0x06,0x06,0x06,0x06, ; +28=476
+0x06,0x06,0x06,0x06,0x06,0x06,0x06,0x06,0x06,0x06,0x06,0x06,0x06,0x06,0x06,0x06,
+0x06,0x06,0x06,0x06,0x06,0x06,0x06,0x06,0x06,0x06,0x06,0x06, ; +28=476
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ; #org 0x5000 only debug
 Highscore:
-;    'NameName   ', level, score,
+;   'NameName   ', level, score,
     '           ', 0x00, 0x00,0x00,0x00,0x00, ; 01
     '           ', 0x00, 0x00,0x00,0x00,0x00, ; 02
     '           ', 0x00, 0x00,0x00,0x00,0x00, ; 03
@@ -3827,16 +3724,6 @@ Highscore:
     '           ', 0x00, 0x00,0x00,0x00,0x00, ; 08
     '           ', 0x00, 0x00,0x00,0x00,0x00, ; 09
     '           ', 0x00, 0x00,0x00,0x00,0x00, ; 10
-;    'TEST01     ', 0x01, 0x00,0x90,0x00,0x00,        ; 01
-;    'TEST02     ', 0x01, 0x00,0x80,0x00,0x00,        ; 02
-;    'TEST03     ', 0x01, 0x00,0x70,0x00,0x00,        ; 03
-;    'TEST04     ', 0x01, 0x00,0x60,0x00,0x00,        ; 04
-;    'TEST05     ', 0x01, 0x00,0x50,0x00,0x00,        ; 05
-;    'TEST06     ', 0x01, 0x00,0x40,0x00,0x00,        ; 06
-;    'TEST07     ', 0x01, 0x00,0x30,0x00,0x00,        ; 07
-;    'TEST08     ', 0x01, 0x00,0x20,0x00,0x00,        ; 08
-;    'TEST09     ', 0x01, 0x00,0x10,0x00,0x00,        ; 09
-;    '           ', 0x00, 0x00,0x00,0x00,0x00,        ; 10
 HiScTemp:
     '           ', 0xff, 0xff,0xff,0xff,0xff,
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
